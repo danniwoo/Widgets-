@@ -157,6 +157,7 @@ struct MotivationWidgetBundle: WidgetBundle {
 
 // MARK: - Previews
 
+@available(iOS 17.0, *)
 #Preview(as: .accessoryRectangular) {
     MotivationWidget()
 } timeline: {
@@ -164,12 +165,14 @@ struct MotivationWidgetBundle: WidgetBundle {
     QuoteEntry(date: .now, quote: QuoteManager.quotes[1])
 }
 
+@available(iOS 17.0, *)
 #Preview(as: .accessoryInline) {
     MotivationWidget()
 } timeline: {
     QuoteEntry(date: .now, quote: QuoteManager.quotes[0])
 }
 
+@available(iOS 17.0, *)
 #Preview(as: .accessoryCircular) {
     MotivationWidget()
 } timeline: {
