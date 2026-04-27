@@ -293,22 +293,6 @@ struct MotivationWidgetBundle: WidgetBundle {
 }
 
 // MARK: - Previews
-
-@available(iOS 17.0, *)
-#Preview(as: .systemSmall) {
-    MotivationWidget()
-} timeline: {
-    QuoteEntry(date: .now, quote: QuoteManager.quotes[0])
-    QuoteEntry(date: .now, quote: QuoteManager.quotes[1])
-}
-
-@available(iOS 17.0, *)
-#Preview(as: .systemMedium) {
-    MotivationWidget()
-} timeline: {
-    QuoteEntry(date: .now, quote: QuoteManager.quotes[0])
-}
-
 @available(iOS 17.0, *)
 #Preview(as: .accessoryRectangular) {
     MotivationWidget()

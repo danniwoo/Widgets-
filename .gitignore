@@ -1,0 +1,47 @@
+# Xcode
+#
+# gitignore contributors: remember to update Xcode.gitignore, Objective-C.gitignore, and Swift.gitignore
+
+## User settings
+xcuserdata/
+
+## Xcode 8 and earlier
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+## DerivedData
+DerivedData/
+
+## Build artifacts
+build/
+Index/
+Logs/
+
+## Swift Package Manager
+.swiftpm/xcode
+.build/
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# macOS
+#
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Dependency Managers
+#
+## CocoaPods (Optional: Ignore Pods directory)
+# Pods/
+
+## Carthage
+Carthage/Build/
+
+## Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
