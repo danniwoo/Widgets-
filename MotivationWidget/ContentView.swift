@@ -12,14 +12,7 @@ struct ContentView: View {
     private var isToday: Bool { currentIndex == QuoteManager.quoteForDate().id }
 
     private var gradientColors: [Color] {
-        let palettes: [[Color]] = [
-            [Color(red: 0.20, green: 0.20, blue: 0.60), Color(red: 0.55, green: 0.20, blue: 0.70)],
-            [Color(red: 0.10, green: 0.50, blue: 0.60), Color(red: 0.10, green: 0.30, blue: 0.80)],
-            [Color(red: 0.70, green: 0.20, blue: 0.30), Color(red: 0.90, green: 0.50, blue: 0.10)],
-            [Color(red: 0.10, green: 0.55, blue: 0.35), Color(red: 0.10, green: 0.30, blue: 0.55)],
-            [Color(red: 0.45, green: 0.10, blue: 0.65), Color(red: 0.20, green: 0.10, blue: 0.45)],
-        ]
-        return palettes[currentIndex % palettes.count]
+        QuoteManager.gradientColors(for: currentIndex)
     }
 
     private func showNext() {

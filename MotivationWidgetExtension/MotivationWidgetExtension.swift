@@ -37,7 +37,86 @@ struct QuoteTimelineProvider: TimelineProvider {
     }
 }
 
-// MARK: - Widget Views
+// MARK: - Home Screen Widget Views
+
+struct SystemSmallView: View {
+    let entry: QuoteEntry
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Decorative opening quote mark
+            Text("\u{201C}")
+                .font(.system(size: 44, weight: .black, design: .serif))
+                .foregroundColor(.white.opacity(0.25))
+                .padding(.leading, 14)
+                .padding(.top, 10)
+                .frame(height: 36)
+
+            Spacer()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(entry.quote.text)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.8)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: false)
+
+                Text(entry.quote.author)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.70))
+                    .italic()
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 14)
+            .padding(.bottom, 14)
+        }
+    }
+}
+
+struct SystemMediumView: View {
+    let entry: QuoteEntry
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 0) {
+            // Left column: large decorative quote mark
+            Text("\u{201C}")
+                .font(.system(size: 88, weight: .black, design: .serif))
+                .foregroundColor(.white.opacity(0.20))
+                .frame(width: 60, alignment: .leading)
+                .padding(.leading, 16)
+                .padding(.top, 8)
+
+            // Right column: quote content
+            VStack(alignment: .leading, spacing: 10) {
+                Text(entry.quote.text)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.85)
+                    .lineSpacing(3)
+                    .fixedSize(horizontal: false, vertical: false)
+
+                HStack(spacing: 6) {
+                    Rectangle()
+                        .fill(Color.white.opacity(0.45))
+                        .frame(width: 22, height: 1.5)
+                        .cornerRadius(1)
+                    Text(entry.quote.author)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.white.opacity(0.75))
+                        .italic()
+                        .lineLimit(1)
+                }
+            }
+            .padding(.vertical, 18)
+            .padding(.trailing, 18)
+        }
+    }
+}
+
+// MARK: - Lock Screen Widget Views
 
 struct AccessoryRectangularView: View {
     let entry: QuoteEntry
@@ -57,8 +136,6 @@ struct AccessoryRectangularView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(displayText)
-                // .footnote = 13pt — readable at a glance; semibold for contrast
-                // default (sans-serif) design is more legible than serif at small sizes
                 .font(.system(.footnote, design: .default, weight: .semibold))
                 .lineLimit(2)
                 .minimumScaleFactor(0.9)
@@ -78,7 +155,6 @@ struct AccessoryRectangularView: View {
 struct AccessoryInlineView: View {
     let entry: QuoteEntry
 
-    // Inline only has ~35 chars visible; show the opening words
     private var inlineText: String {
         let text = entry.quote.text
         let limit = 38
@@ -103,7 +179,6 @@ struct AccessoryCircularView: View {
         ZStack {
             AccessoryWidgetBackground()
             VStack(spacing: 2) {
-                // Large opening quote mark is instantly recognisable as a quote app
                 Text("\u{201C}")
                     .font(.system(size: 28, weight: .black, design: .serif))
                     .widgetAccentable()
@@ -123,15 +198,66 @@ struct MotivationWidgetEntryView: View {
     let entry: QuoteEntry
 
     var body: some View {
-        switch family {
-        case .accessoryRectangular:
-            AccessoryRectangularView(entry: entry)
-        case .accessoryInline:
-            AccessoryInlineView(entry: entry)
-        case .accessoryCircular:
-            AccessoryCircularView(entry: entry)
-        @unknown default:
-            AccessoryRectangularView(entry: entry)
+        Group {
+            switch family {
+            case .systemSmall:
+                SystemSmallView(entry: entry)
+            case .systemMedium:
+                SystemMediumView(entry: entry)
+            case .accessoryRectangular:
+                AccessoryRectangularView(entry: entry)
+            case .accessoryInline:
+                AccessoryInlineView(entry: entry)
+            case .accessoryCircular:
+                AccessoryCircularView(entry: entry)
+            @unknown default:
+                AccessoryRectangularView(entry: entry)
+            }
+        }
+        .modifier(WidgetBackgroundModifier(
+            family: family,
+            gradientColors: QuoteManager.gradientColors(for: entry.quote.id)
+        ))
+    }
+}
+
+// Applies gradient background for home screen families,
+// system vibrancy background for lock screen families.
+struct WidgetBackgroundModifier: ViewModifier {
+    let family: WidgetFamily
+    let gradientColors: [Color]
+
+    private var isHomeScreen: Bool {
+        family == .systemSmall || family == .systemMedium || family == .systemLarge
+    }
+
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            if isHomeScreen {
+                content.containerBackground(for: .widget) {
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+            } else {
+                content.containerBackground(.fill.tertiary, for: .widget)
+            }
+        } else {
+            if isHomeScreen {
+                ZStack {
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea()
+                    content
+                }
+            } else {
+                content
+            }
         }
     }
 }
@@ -144,26 +270,16 @@ struct MotivationWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: QuoteTimelineProvider()) { entry in
             MotivationWidgetEntryView(entry: entry)
-                .modifier(ContainerBackgroundModifier())
         }
         .configurationDisplayName("Daily Motivation")
         .description("A new motivational quote every day.")
         .supportedFamilies([
+            .systemSmall,
+            .systemMedium,
             .accessoryRectangular,
             .accessoryInline,
             .accessoryCircular,
         ])
-    }
-}
-
-// iOS 16 compatibility: containerBackground is iOS 17+
-struct ContainerBackgroundModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content.containerBackground(.fill.tertiary, for: .widget)
-        } else {
-            content
-        }
     }
 }
 
@@ -177,6 +293,21 @@ struct MotivationWidgetBundle: WidgetBundle {
 }
 
 // MARK: - Previews
+
+@available(iOS 17.0, *)
+#Preview(as: .systemSmall) {
+    MotivationWidget()
+} timeline: {
+    QuoteEntry(date: .now, quote: QuoteManager.quotes[0])
+    QuoteEntry(date: .now, quote: QuoteManager.quotes[1])
+}
+
+@available(iOS 17.0, *)
+#Preview(as: .systemMedium) {
+    MotivationWidget()
+} timeline: {
+    QuoteEntry(date: .now, quote: QuoteManager.quotes[0])
+}
 
 @available(iOS 17.0, *)
 #Preview(as: .accessoryRectangular) {

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct Quote: Identifiable {
     let id: Int
@@ -66,5 +67,18 @@ struct QuoteManager {
         let dayOfYear = calendar.ordinality(of: .day, in: .year, for: date) ?? 1
         let index = (dayOfYear - 1) % quotes.count
         return quotes[index]
+    }
+
+    // Shared gradient palette — used by both the main app and home screen widgets
+    static let gradientPalettes: [[Color]] = [
+        [Color(red: 0.20, green: 0.20, blue: 0.60), Color(red: 0.55, green: 0.20, blue: 0.70)],
+        [Color(red: 0.10, green: 0.50, blue: 0.60), Color(red: 0.10, green: 0.30, blue: 0.80)],
+        [Color(red: 0.70, green: 0.20, blue: 0.30), Color(red: 0.90, green: 0.50, blue: 0.10)],
+        [Color(red: 0.10, green: 0.55, blue: 0.35), Color(red: 0.10, green: 0.30, blue: 0.55)],
+        [Color(red: 0.45, green: 0.10, blue: 0.65), Color(red: 0.20, green: 0.10, blue: 0.45)],
+    ]
+
+    static func gradientColors(for index: Int) -> [Color] {
+        gradientPalettes[index % gradientPalettes.count]
     }
 }
