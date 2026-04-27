@@ -46,7 +46,7 @@ struct SystemSmallView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("\u{201C}")
                 .font(.system(size: 44, weight: .black, design: .serif))
-                .foregroundColor(.white.opacity(0.25))
+                .foregroundColor(.primary.opacity(0.20))
                 .padding(.leading, 14)
                 .padding(.top, 10)
                 .frame(height: 36)
@@ -56,14 +56,14 @@ struct SystemSmallView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(entry.quote.text)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .lineLimit(5)
                     .minimumScaleFactor(0.75)
                     .lineSpacing(2)
 
                 Text(entry.quote.author)
                     .font(.system(size: 9, weight: .regular))
-                    .foregroundColor(.white.opacity(0.60))
+                    .foregroundColor(.secondary)
                     .italic()
                     .lineLimit(1)
             }
@@ -81,7 +81,7 @@ struct SystemMediumView: View {
             // Left column: large decorative quote mark
             Text("\u{201C}")
                 .font(.system(size: 88, weight: .black, design: .serif))
-                .foregroundColor(.white.opacity(0.20))
+                .foregroundColor(.primary.opacity(0.15))
                 .frame(width: 60, alignment: .leading)
                 .padding(.leading, 16)
                 .padding(.top, 8)
@@ -90,19 +90,19 @@ struct SystemMediumView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(entry.quote.text)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .lineLimit(5)
                     .minimumScaleFactor(0.85)
                     .lineSpacing(3)
 
                 HStack(spacing: 5) {
                     Rectangle()
-                        .fill(Color.white.opacity(0.35))
+                        .fill(Color.secondary.opacity(0.5))
                         .frame(width: 16, height: 1)
                         .cornerRadius(1)
                     Text(entry.quote.author)
                         .font(.system(size: 10, weight: .regular))
-                        .foregroundColor(.white.opacity(0.60))
+                        .foregroundColor(.secondary)
                         .italic()
                         .lineLimit(1)
                 }
@@ -211,18 +211,14 @@ struct MotivationWidgetEntryView: View {
                 AccessoryRectangularView(entry: entry)
             }
         }
-        .modifier(WidgetBackgroundModifier(
-            family: family,
-            gradientColors: QuoteManager.gradientColors(for: entry.quote.id)
-        ))
+        .modifier(WidgetBackgroundModifier(family: family))
     }
 }
 
-// Applies gradient background for home screen families,
-// system vibrancy background for lock screen families.
+// Home screen: frosted glass (iOS 17+) or dark fill (iOS 16).
+// Lock screen: system vibrancy — no custom background needed.
 struct WidgetBackgroundModifier: ViewModifier {
     let family: WidgetFamily
-    let gradientColors: [Color]
 
     private var isHomeScreen: Bool {
         family == .systemSmall || family == .systemMedium || family == .systemLarge
@@ -231,25 +227,14 @@ struct WidgetBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             if isHomeScreen {
-                content.containerBackground(for: .widget) {
-                    LinearGradient(
-                        colors: gradientColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                }
+                content.containerBackground(.ultraThinMaterial, for: .widget)
             } else {
                 content.containerBackground(.fill.tertiary, for: .widget)
             }
         } else {
             if isHomeScreen {
                 ZStack {
-                    LinearGradient(
-                        colors: gradientColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .ignoresSafeArea()
+                    Color.black.opacity(0.55).ignoresSafeArea()
                     content
                 }
             } else {
