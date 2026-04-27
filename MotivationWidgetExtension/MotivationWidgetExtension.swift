@@ -43,34 +43,28 @@ struct SystemSmallView: View {
     let entry: QuoteEntry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Decorative opening quote mark
+        VStack(alignment: .leading, spacing: 5) {
+            Text(entry.quote.text)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.white)
+                .lineLimit(7)
+                .minimumScaleFactor(0.72)
+                .lineSpacing(2)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+
+            Text(entry.quote.author)
+                .font(.system(size: 9, weight: .regular))
+                .foregroundColor(.white.opacity(0.60))
+                .italic()
+                .lineLimit(1)
+        }
+        .padding(14)
+        // Decorative quote mark as non-layout overlay so it never steals vertical space
+        .overlay(alignment: .topLeading) {
             Text("\u{201C}")
-                .font(.system(size: 44, weight: .black, design: .serif))
-                .foregroundColor(.white.opacity(0.25))
-                .padding(.leading, 14)
-                .padding(.top, 10)
-                .frame(height: 36)
-
-            Spacer()
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.quote.text)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.white)
-                    .lineLimit(5)
-                    .minimumScaleFactor(0.75)
-                    .lineSpacing(2)
-                    .fixedSize(horizontal: false, vertical: false)
-
-                Text(entry.quote.author)
-                    .font(.system(size: 9, weight: .regular))
-                    .foregroundColor(.white.opacity(0.60))
-                    .italic()
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 14)
+                .font(.system(size: 56, weight: .black, design: .serif))
+                .foregroundColor(.white.opacity(0.12))
+                .offset(x: 8, y: -6)
         }
     }
 }
@@ -89,14 +83,14 @@ struct SystemMediumView: View {
                 .padding(.top, 8)
 
             // Right column: quote content
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(entry.quote.text)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
-                    .lineLimit(5)
-                    .minimumScaleFactor(0.82)
-                    .lineSpacing(3)
-                    .fixedSize(horizontal: false, vertical: false)
+                    .lineLimit(6)
+                    .minimumScaleFactor(0.80)
+                    .lineSpacing(2)
+                    .frame(maxHeight: .infinity, alignment: .topLeading)
 
                 HStack(spacing: 5) {
                     Rectangle()
@@ -110,7 +104,7 @@ struct SystemMediumView: View {
                         .lineLimit(1)
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 14)
             .padding(.trailing, 18)
         }
     }
@@ -137,8 +131,8 @@ struct AccessoryRectangularView: View {
         VStack(alignment: .leading, spacing: 3) {
             Text(displayText)
                 .font(.system(.footnote, design: .default, weight: .semibold))
-                .lineLimit(2)
-                .minimumScaleFactor(0.9)
+                .lineLimit(3)
+                .minimumScaleFactor(0.88)
                 .widgetAccentable()
                 .fixedSize(horizontal: false, vertical: false)
 
