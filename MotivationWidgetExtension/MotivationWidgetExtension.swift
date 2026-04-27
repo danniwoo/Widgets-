@@ -42,28 +42,56 @@ struct QuoteTimelineProvider: TimelineProvider {
 struct AccessoryRectangularView: View {
     let entry: QuoteEntry
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(entry.quote.text)
-                .font(.system(size: 11, weight: .medium, design: .serif))
-                .lineLimit(3)
-                .minimumScaleFactor(0.7)
-                .widgetAccentable()
-            Text("— \(entry.quote.author)")
-                .font(.system(size: 9, weight: .regular))
-                .opacity(0.75)
-                .lineLimit(1)
+    // Truncate at a word boundary so we never cut mid-word
+    private var displayText: String {
+        let text = entry.quote.text
+        let limit = 72
+        guard text.count > limit else { return text }
+        let prefix = String(text.prefix(limit))
+        if let cut = prefix.lastIndex(of: " ") {
+            return String(prefix[..<cut]) + "…"
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .padding(.horizontal, 2)
+        return prefix + "…"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(displayText)
+                // .footnote = 13pt — readable at a glance; semibold for contrast
+                // default (sans-serif) design is more legible than serif at small sizes
+                .font(.system(.footnote, design: .default, weight: .semibold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
+                .widgetAccentable()
+                .fixedSize(horizontal: false, vertical: false)
+
+            Text(entry.quote.author)
+                .font(.system(.caption2, design: .default, weight: .regular))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
 struct AccessoryInlineView: View {
     let entry: QuoteEntry
 
+    // Inline only has ~35 chars visible; show the opening words
+    private var inlineText: String {
+        let text = entry.quote.text
+        let limit = 38
+        guard text.count > limit else { return "\u{201C}\(text)\u{201D}" }
+        let prefix = String(text.prefix(limit))
+        if let cut = prefix.lastIndex(of: " ") {
+            return "\u{201C}" + String(prefix[..<cut]) + "…"
+        }
+        return "\u{201C}" + prefix + "…"
+    }
+
     var body: some View {
-        Text("\(entry.quote.text) — \(entry.quote.author)")
+        Text(inlineText)
             .widgetAccentable()
     }
 }
@@ -71,25 +99,18 @@ struct AccessoryInlineView: View {
 struct AccessoryCircularView: View {
     let entry: QuoteEntry
 
-    private var initials: String {
-        entry.quote.author
-            .components(separatedBy: " ")
-            .compactMap { $0.first }
-            .prefix(2)
-            .map(String.init)
-            .joined()
-    }
-
     var body: some View {
         ZStack {
             AccessoryWidgetBackground()
-            VStack(spacing: 1) {
-                Image(systemName: "quote.bubble.fill")
-                    .font(.system(size: 14))
+            VStack(spacing: 2) {
+                // Large opening quote mark is instantly recognisable as a quote app
+                Text("\u{201C}")
+                    .font(.system(size: 28, weight: .black, design: .serif))
                     .widgetAccentable()
-                Text(initials)
-                    .font(.system(size: 10, weight: .bold))
-                    .lineLimit(1)
+                    .offset(y: 4)
+                Text("Daily")
+                    .font(.system(size: 8, weight: .semibold))
+                    .foregroundStyle(.secondary)
             }
         }
     }
