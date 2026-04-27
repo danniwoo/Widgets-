@@ -54,18 +54,18 @@ struct SystemSmallView: View {
 
             Spacer()
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(entry.quote.text)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white)
-                    .lineLimit(4)
-                    .minimumScaleFactor(0.8)
+                    .lineLimit(5)
+                    .minimumScaleFactor(0.75)
                     .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: false)
 
                 Text(entry.quote.author)
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(.white.opacity(0.70))
+                    .font(.system(size: 9, weight: .regular))
+                    .foregroundColor(.white.opacity(0.60))
                     .italic()
                     .lineLimit(1)
             }
@@ -89,28 +89,28 @@ struct SystemMediumView: View {
                 .padding(.top, 8)
 
             // Right column: quote content
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(entry.quote.text)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
-                    .lineLimit(4)
-                    .minimumScaleFactor(0.85)
+                    .lineLimit(5)
+                    .minimumScaleFactor(0.82)
                     .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: false)
 
-                HStack(spacing: 6) {
+                HStack(spacing: 5) {
                     Rectangle()
-                        .fill(Color.white.opacity(0.45))
-                        .frame(width: 22, height: 1.5)
+                        .fill(Color.white.opacity(0.35))
+                        .frame(width: 16, height: 1)
                         .cornerRadius(1)
                     Text(entry.quote.author)
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.white.opacity(0.75))
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundColor(.white.opacity(0.60))
                         .italic()
                         .lineLimit(1)
                 }
             }
-            .padding(.vertical, 18)
+            .padding(.vertical, 16)
             .padding(.trailing, 18)
         }
     }
@@ -124,7 +124,7 @@ struct AccessoryRectangularView: View {
     // Truncate at a word boundary so we never cut mid-word
     private var displayText: String {
         let text = entry.quote.text
-        let limit = 72
+        let limit = 90
         guard text.count > limit else { return text }
         let prefix = String(text.prefix(limit))
         if let cut = prefix.lastIndex(of: " ") {
